@@ -1,6 +1,7 @@
 const { Client } = require('@notionhq/client');
 const { NotionToMarkdown } = require('notion-to-md');
 const fs = require('fs');
+const path = require('path');
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 const n2m = new NotionToMarkdown({ notionClient: notion });
@@ -15,10 +16,6 @@ async function sync() {
 
   console.log(`총 ${response.results.length}개 항목 발견`);
 
-  if (!fs.existsSync('refactor')) {
-    fs.mkdirSync('refactor');
-  }
-
   for (const page of response.results) {
     const props = page.properties;
 
@@ -27,12 +24,21 @@ async function sync() {
       console.log(`날짜 없는 항목 스킵: ${page.id}`);
       continue;
     }
-    const date = dateRaw.slice(0, 10);
+
+    const date = dateRaw.slice(0, 10); // YYYY-MM-DD
+    const year = date.slice(0, 4);     // YYYY
+    const month = date.slice(5, 7);    // MM
 
     const summary =
       props['한줄요약']?.rich_text?.[0]?.plain_text || '내용 없음';
 
-    const filename = `refactor/${date}.md`;
+    // 년/월 폴더 생성
+    const dir = path.join('refactor', year, month);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    const filename = path.join(dir, `${date}.md`);
 
     if (fs.existsSync(filename)) {
       console.log(`이미 존재: ${filename} 스킵`);
