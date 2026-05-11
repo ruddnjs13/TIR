@@ -1,23 +1,20 @@
-const notionPkg = require('@notionhq/client');
+const { Client } = require('@notionhq/client');
 const { NotionToMarkdown } = require('notion-to-md');
 const fs = require('fs');
 
-// 다양한 임포트 방식 대응
-const Client = notionPkg.Client ?? notionPkg.default ?? notionPkg;
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
-
-// databases 객체 확인
-console.log('databases 타입:', typeof notion.databases);
-console.log('databases.query 타입:', typeof notion.databases?.query);
+const n2m = new NotionToMarkdown({ notionClient: notion });
 
 async function sync() {
   const databaseId = process.env.NOTION_DATABASE_ID;
 
-  // query 함수를 직접 바인딩해서 호출
-  const queryFn = notion.databases.query.bind(notion.databases);
-  const response = await queryFn({
-    database_id: databaseId,
-    sorts: [{ property: '날짜', direction: 'descending' }],
+  // fetch 직접 호출 방식
+  const response = await notion.request({
+    path: `databases/${databaseId}/query`,
+    method: 'POST',
+    body: {
+      sorts: [{ property: '날짜', direction: 'descending' }],
+    },
   });
 
   console.log(`총 ${response.results.length}개 항목 발견`);
@@ -25,8 +22,6 @@ async function sync() {
   if (!fs.existsSync('refactor')) {
     fs.mkdirSync('refactor');
   }
-
-  const n2m = new NotionToMarkdown({ notionClient: notion });
 
   for (const page of response.results) {
     const props = page.properties;
@@ -39,8 +34,7 @@ async function sync() {
     const date = dateRaw.slice(0, 10);
 
     const summary =
-      props['한줄요약']?.rich_text?.[0]?.plain_text ||
-      '내용 없음';
+      props['한줄요약']?.rich_text?.[0]?.plain_text || '내용 없음';
 
     const filename = `refactor/${date}.md`;
 
