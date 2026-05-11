@@ -8,13 +8,9 @@ const n2m = new NotionToMarkdown({ notionClient: notion });
 async function sync() {
   const databaseId = process.env.NOTION_DATABASE_ID;
 
-  // fetch 직접 호출 방식
-  const response = await notion.request({
-    path: `databases/${databaseId}/query`,
-    method: 'POST',
-    body: {
-      sorts: [{ property: '날짜', direction: 'descending' }],
-    },
+  const response = await notion.databases.query({
+    database_id: databaseId,
+    sorts: [{ property: '날짜', direction: 'descending' }],
   });
 
   console.log(`총 ${response.results.length}개 항목 발견`);
