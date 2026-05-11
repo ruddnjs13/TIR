@@ -19,7 +19,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install @notionhq/client notion-to-md
+        run: npm install @notionhq/client@2.2.15 notion-to-md@3.1.1
 
       - name: Run sync script
         env:
