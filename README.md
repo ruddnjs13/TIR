@@ -1,4 +1,4 @@
 # TIR
 Today I Refectored
 
-매일 저녁 30분씩 리펙토링
+매일 30분씩 코드 리펙토링
