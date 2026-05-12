@@ -2,7 +2,7 @@ name: Notion to GitHub Sync
 
 on:
   schedule:
-    - cron: '20 19 * * *'  # 매일 지정된 시간에 자동
+    - cron: '22 7 * * *'  # 매일 지정된 시간에 자동
   workflow_dispatch:       # 수동 실행도 가능
 
 jobs:
