@@ -29,8 +29,11 @@ async function sync() {
     const year = date.slice(0, 4);     // YYYY
     const month = date.slice(5, 7);    // MM
 
-    const summary =
-      props['한줄요약']?.rich_text?.[0]?.plain_text || '내용 없음';
+    // 페이지 제목 가져오기
+    const title =
+      props['제목']?.title?.[0]?.plain_text ||
+      props['이름']?.title?.[0]?.plain_text ||
+      '제목 없음';
 
     // 년/월 폴더 생성
     const dir = path.join('refactor', year, month);
@@ -49,7 +52,7 @@ async function sync() {
     const mdString = n2m.toMarkdownString(mdBlocks);
     const body = typeof mdString === 'string' ? mdString : mdString?.parent ?? '';
 
-    const content = `# 📅 ${date} 리팩토링\n\n> ${summary}\n\n${body}`;
+    const content = `# ${title}\n\n${body}`;
     fs.writeFileSync(filename, content, 'utf8');
     console.log(`✅ 생성됨: ${filename}`);
   }
