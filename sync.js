@@ -25,17 +25,20 @@ async function sync() {
       continue;
     }
 
-    const date = dateRaw.slice(0, 10); // YYYY-MM-DD
-    const year = date.slice(0, 4);     // YYYY
-    const month = date.slice(5, 7);    // MM
+    const date = dateRaw.slice(0, 10);
+    const year = date.slice(0, 4);
+    const month = date.slice(5, 7);
 
-    // 페이지 제목 가져오기
+    // 페이지 제목
     const title =
       props['제목']?.title?.[0]?.plain_text ||
       props['이름']?.title?.[0]?.plain_text ||
       '제목 없음';
 
-    // 년/월 폴더 생성
+    // 한줄요약
+    const summary =
+      props['한줄요약']?.rich_text?.[0]?.plain_text || '내용 없음';
+
     const dir = path.join('refactor', year, month);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -52,7 +55,8 @@ async function sync() {
     const mdString = n2m.toMarkdownString(mdBlocks);
     const body = typeof mdString === 'string' ? mdString : mdString?.parent ?? '';
 
-    const content = `# ${title}\n\n${body}`;
+    // 제목: 페이지 제목, 한줄요약 유지
+    const content = `# ${title}\n\n> ${summary}\n\n${body}`;
     fs.writeFileSync(filename, content, 'utf8');
     console.log(`✅ 생성됨: ${filename}`);
   }
