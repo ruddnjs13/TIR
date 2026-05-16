@@ -29,8 +29,8 @@ jobs:
 
       - name: Commit and push
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config user.name "ruddnjs13"
+          git config user.email "ruddnjs013@gmail.com"
           git add .
           git diff --staged --quiet || git commit -m "📝 노션 리팩토링 기록 자동 동기화"
           git pull --rebase
